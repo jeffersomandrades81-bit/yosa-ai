@@ -2,113 +2,559 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yosa AI Completa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#09090b">
+<title>Yosa AI</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
-body{background:#0a0a0d;color:#fff;height:100dvh;display:flex;flex-direction:column}
-.top{height:56px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
-.top b{display:flex;align-items:center;gap:8px}
-.top button{background:#212126;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:10px;font-size:12px}
-.chat{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
-.bubble{max-width:88%;padding:14px 18px;border-radius:18px;white-space:pre-wrap;line-height:1.5;font-size:15px}
-.bot{background:#1e1e24;border:1px solid #2a2a32;border-bottom-left-radius:6px}
-.user{background:#2f89ff;align-self:flex-end;border-bottom-right-radius:6px}
-.bar{padding:12px;border-top:1px solid #222;background:#121214;display:flex;gap:8px}
-.bar input{flex:1;background:#1e1e24;border:1px solid #333;border-radius:24px;padding:13px 16px;color:#fff;outline:none}
-.bar button{width:44px;height:44px;border-radius:50%;border:none;background:#fff;color:#000;font-weight:900;font-size:18px}
-.config{position:fixed;inset:0;background:#000000cc;backdrop-filter:blur(10px);display:none;place-items:center;z-index:20;padding:20px}
-.config.show{display:grid}
-.card{background:#18181c;border:1px solid #2a2a32;border-radius:16px;padding:20px;width:100%;max-width:380px}
-.card h2{font-size:18px;margin-bottom:8px}
-.card p{font-size:13px;color:#9aa0a6;margin-bottom:14px;line-height:1.4}
-.card input{width:100%;background:#0f0f12;border:1px solid #333;border-radius:12px;padding:13px;color:#fff;margin-bottom:12px}
-.card button{width:100%;background:#2f89ff;border:none;padding:13px;border-radius:12px;color:#fff;font-weight:700}
-.link{color:#4ea1ff;font-size:12px;text-decoration:none}
+:root {
+  color-scheme: dark;
+  --bg: #09090b;
+  --panel: #111114;
+  --card: #19191f;
+  --border: #292930;
+  --text: #f5f5f7;
+  --muted: #a1a1aa;
+  --accent: #8b5cf6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 1000px;
+  margin: auto;
+  border-inline: 1px solid #17171c;
+}
+
+header {
+  height: 66px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--border);
+  background: #0d0d10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.logo {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.brand h1 {
+  font-size: 17px;
+}
+
+.brand p {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 39px;
+  height: 39px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: white;
+  font-size: 17px;
+}
+
+.icon-btn:hover {
+  background: #25252d;
+}
+
+.settings {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  background: #0d0d10;
+}
+
+.settings input,
+.settings select {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  color: white;
+}
+
+.settings input {
+  flex: 1;
+}
+
+.settings select {
+  max-width: 46%;
+}
+
+.chat {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  scroll-behavior: smooth;
+}
+
+.welcome {
+  margin: auto;
+  text-align: center;
+  max-width: 440px;
+  padding: 30px 10px;
+}
+
+.welcome .big-logo {
+  font-size: 45px;
+  margin-bottom: 15px;
+}
+
+.welcome h2 {
+  font-size: clamp(25px, 5vw, 35px);
+  letter-spacing: -1px;
+}
+
+.welcome p {
+  color: var(--muted);
+  margin-top: 12px;
+  line-height: 1.6;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.suggestion {
+  padding: 10px 13px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  color: #ddd6fe;
+  font-size: 13px;
+}
+
+.suggestion:hover {
+  border-color: var(--accent);
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 88%;
+  gap: 6px;
+}
+
+.message.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message.bot {
+  align-self: flex-start;
+}
+
+.author {
+  color: var(--muted);
+  font-size: 11px;
+  padding: 0 5px;
+}
+
+.bubble {
+  padding: 13px 16px;
+  line-height: 1.65;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.user .bubble {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  border-radius: 19px 19px 5px 19px;
+}
+
+.bot .bubble {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 5px 19px 19px 19px;
+}
+
+.typing {
+  color: var(--muted);
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  to { opacity: .4; }
+}
+
+.composer {
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border);
+  background: #0d0d10;
+}
+
+.input-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid #34343e;
+  background: #17171c;
+  border-radius: 20px;
+  transition: border-color .2s;
+}
+
+.input-box:focus-within {
+  border-color: #8b5cf6;
+}
+
+#prompt {
+  flex: 1;
+  width: 100%;
+  max-height: 150px;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: white;
+  padding: 10px;
+  line-height: 1.5;
+}
+
+#send {
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 14px;
+  background: white;
+  color: #111;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+#send:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.note {
+  color: #71717a;
+  text-align: center;
+  font-size: 10px;
+  margin-top: 9px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  header { height: 60px; padding: 0 12px; }
+  .chat { padding: 18px 12px; }
+  .message { max-width: 95%; }
+  .settings { padding: 10px; }
+  .composer { padding: 10px; }
+}
 </style>
 </head>
-<body>
-<div class="top"><b>⬡ Yosa AI</b><button onclick="openCfg()">⚙️ API</button></div>
-<div class="chat" id="chat"></div>
-<div class="bar"><input id="input" placeholder="Pergunte para a Yosa..."><button onclick="send()">↑</button></div>
 
-<div class="config" id="config">
-<div class="card">
-<h2>Configurar Yosa AI</h2>
-<p>Cole sua API Key do projeto 958571561835. Ela fica salva só no seu celular/navegador.</p>
-<a class="link" href="https://aistudio.google.com/api-keys" target="_blank">→ Gerar key em aistudio.google.com/api-keys</a><br><br>
-<input id="keyInput" placeholder="Cole sua API Key aqui (AIza...)">
-<button onclick="saveKey()">Salvar e Começar</button>
-<p style="margin-top:12px;font-size:11px;color:#666">Dica: no GitHub Pages, deixe a key sem restrição ou restrinja para seu domínio.</p>
-</div>
+<body>
+<div class="app">
+
+<header>
+  <div class="brand">
+    <div class="logo">Y</div>
+    <div>
+      <h1>Yosa AI</h1>
+      <p>Seu assistente inteligente</p>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="icon-btn" id="settingsBtn"
+      aria-label="Configurações" title="Configurações">⚙</button>
+    <button class="icon-btn" id="clearBtn"
+      aria-label="Limpar conversa" title="Nova conversa">＋</button>
+  </div>
+</header>
+
+<section class="settings hidden" id="settings">
+  <input id="apiKey" type="password"
+    placeholder="Cole sua chave Gemini"
+    autocomplete="off" spellcheck="false">
+  <select id="model" aria-label="Modelo de IA">
+    <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+    <option value="gemini-3.0-flash">Gemini 3 Flash</option>
+  </select>
+</section>
+
+<main class="chat" id="chat" aria-live="polite">
+  <section class="welcome" id="welcome">
+    <div class="big-logo">✦</div>
+    <h2>O que vamos criar hoje?</h2>
+    <p>Converse, tire dúvidas, aprenda coisas novas e transforme suas ideias em realidade.</p>
+
+    <div class="suggestions">
+      <button class="suggestion">Me ensine algo novo</button>
+      <button class="suggestion">Crie um site incrível</button>
+      <button class="suggestion">Me ajude com meus estudos</button>
+    </div>
+  </section>
+</main>
+
+<footer class="composer">
+  <div class="input-box">
+    <textarea id="prompt" rows="1"
+      placeholder="Pergunte qualquer coisa..."
+      aria-label="Sua mensagem"></textarea>
+    <button id="send" aria-label="Enviar mensagem">↑</button>
+  </div>
+  <p class="note">Yosa AI pode cometer erros. Confira informações importantes.</p>
+</footer>
+
 </div>
 
 <script>
-const chatEl = document.getElementById('chat');
-const inputEl = document.getElementById('input');
-const cfgEl = document.getElementById('config');
-const keyInput = document.getElementById('keyInput');
+(() => {
+  "use strict";
 
-let API_KEY = localStorage.getItem('YOSA_API_KEY') || '';
+  const $ = id => document.getElementById(id);
 
-function openCfg(){ cfgEl.classList.add('show'); keyInput.value = API_KEY; }
-function closeCfg(){ cfgEl.classList.remove('show'); }
+  const chat = $("chat");
+  const prompt = $("prompt");
+  const sendBtn = $("send");
+  const settings = $("settings");
+  const apiKeyInput = $("apiKey");
+  const modelSelect = $("model");
+  const welcome = $("welcome");
 
-function saveKey(){
-  const k = keyInput.value.trim();
-  if(!k.startsWith('AIza')){ alert('Key inválida! Tem que começar com AIza'); return; }
-  localStorage.setItem('YOSA_API_KEY', k);
-  API_KEY = k;
-  closeCfg();
-  chatEl.innerHTML='';
-  addBot('Key salva com sucesso! ✅\n\nOlá! Eu sou a Yosa, sua IA completa. Como posso ajudar hoje?');
-}
+  let history = [];
+  let busy = false;
 
-function addBot(t){
-  const d=document.createElement('div'); d.className='bubble bot'; d.textContent=t;
-  chatEl.appendChild(d); chatEl.scrollTop=chatEl.scrollHeight;
-}
-function addUser(t){
-  const d=document.createElement('div'); d.className='bubble user'; d.textContent=t;
-  chatEl.appendChild(d); chatEl.scrollTop=chatEl.scrollHeight;
-}
+  // A chave fica apenas nesta sessão; não é salva no site.
+  // Para um site público, use um backend para proteger suas credenciais.
 
-window.onload=()=>{
-  if(!API_KEY){ openCfg(); }
-  else{ addBot('Olá! Eu sou a Yosa 👋\n\nJá estou conectada e pronta. (Projeto 958571561835)'); }
-};
+  $("settingsBtn").addEventListener("click", () => {
+    settings.classList.toggle("hidden");
+  });
 
-inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') send() });
+  $("clearBtn").addEventListener("click", () => {
+    if (busy) return;
+    history = [];
+    chat.replaceChildren(welcome);
+    welcome.classList.remove("hidden");
+    prompt.focus();
+  });
 
-async function send(){
-  const text=inputEl.value.trim();
-  if(!text) return;
-  if(!API_KEY){ openCfg(); return; }
-  addUser(text);
-  inputEl.value='';
-
-  const load=document.createElement('div'); load.className='bubble bot'; load.textContent='Yosa digitando...';
-  chatEl.appendChild(load); chatEl.scrollTop=chatEl.scrollHeight;
-
-  try{
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:text}]}]})
+  document.querySelectorAll(".suggestion").forEach(button => {
+    button.addEventListener("click", () => {
+      prompt.value = button.textContent.trim();
+      resizeInput();
+      prompt.focus();
     });
-    const data=await res.json();
-    load.remove();
-    if(data.error){ 
-      if(data.error.message.includes('API_KEY_INVALID')){ localStorage.removeItem('YOSA_API_KEY'); openCfg(); throw new Error('API Key inválida. Cole novamente.'); }
-      throw new Error(data.error.message); 
-    }
-    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta';
-    addBot(reply);
-  }catch(err){
-    load.remove();
-    addBot('Erro: '+err.message);
+  });
+
+  function resizeInput() {
+    prompt.style.height = "auto";
+    prompt.style.height = Math.min(prompt.scrollHeight, 150) + "px";
   }
-}
+
+  prompt.addEventListener("input", resizeInput);
+
+  prompt.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      send();
+    }
+  });
+
+  function addMessage(role, text, extraClass = "") {
+    welcome.classList.add("hidden");
+
+    const wrapper = document.createElement("div");
+    wrapper.className = `message ${role}`;
+
+    const author = document.createElement("span");
+    author.className = "author";
+    author.textContent = role === "user" ? "Você" : "Yosa AI";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble " + extraClass;
+    // textContent impede que respostas sejam interpretadas como HTML.
+    bubble.textContent = text;
+
+    wrapper.append(author, bubble);
+    chat.appendChild(wrapper);
+    chat.scrollTop = chat.scrollHeight;
+
+    return { wrapper, bubble };
+  }
+
+  function friendlyError(status, message) {
+    if (status === 400 || status === 401 || status === 403) {
+      return "A API recusou a solicitação. Confira sua chave, as restrições e se a API Gemini está habilitada. Detalhe: " + message;
+    }
+    if (status === 404) {
+      return "O modelo escolhido não está disponível. Abra as configurações e escolha um modelo disponível para sua chave.";
+    }
+    if (status === 429) {
+      return "Limite de solicitações atingido. Aguarde um pouco e tente novamente.";
+    }
+    if (status === 0) {
+      return "Não foi possível conectar. Verifique a internet e tente novamente.";
+    }
+    return "Não consegui obter uma resposta. " + message;
+  }
+
+  async function send() {
+    const text = prompt.value.trim();
+    if (!text || busy) return;
+
+    const apiKey = apiKeyInput.value.trim();
+
+    if (!apiKey) {
+      settings.classList.remove("hidden");
+      apiKeyInput.focus();
+      addMessage("bot", "Abra as configurações ⚙ e cole uma chave válida da API Gemini para começar.");
+      return;
+    }
+
+    if (text.length > 20000) {
+      addMessage("bot", "Sua mensagem é muito longa. Divida-a em partes menores.");
+      return;
+    }
+
+    addMessage("user", text);
+    prompt.value = "";
+    resizeInput();
+
+    const loading = addMessage("bot", "Pensando...", "typing");
+
+    busy = true;
+    sendBtn.disabled = true;
+
+    // Guarda a conversa anterior para a IA responder com contexto.
+    const nextHistory = [
+      ...history,
+      { role: "user", parts: [{ text }] }
+    ];
+
+    try {
+      const model = modelSelect.value;
+      const endpoint =
+        "https://generativelanguage.googleapis.com/v1beta/models/" +
+        encodeURIComponent(model) + ":generateContent";
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey
+        },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{
+              text: "Você é Yosa AI, uma assistente útil, amigável e clara. Responda em português brasileiro por padrão. Adapte o tamanho da resposta ao pedido do usuário."
+            }]
+          },
+          contents: nextHistory,
+          generationConfig: {
+            temperature: 0.8,
+            maxOutputTokens: 2048
+          }
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(friendlyError(
+          response.status,
+          data.error?.message || "HTTP " + response.status
+        ));
+      }
+
+      const reply = (data.candidates?.[0]?.content?.parts || [])
+        .map(part => part.text || "")
+        .join("")
+        .trim();
+
+      if (!reply) {
+        throw new Error("A API não retornou texto. Tente reformular sua pergunta.");
+      }
+
+      history = [
+        ...nextHistory,
+        { role: "model", parts: [{ text: reply }] }
+      ];
+
+      loading.bubble.classList.remove("typing");
+      loading.bubble.textContent = reply;
+
+    } catch (error) {
+      loading.bubble.classList.remove("typing");
+      loading.bubble.textContent =
+        "⚠️ " + (error.message || "Erro inesperado.");
+    } finally {
+      busy = false;
+      sendBtn.disabled = false;
+      prompt.focus();
+      chat.scrollTop = chat.scrollHeight;
+    }
+  }
+
+  sendBtn.addEventListener("click", send);
+})();
 </script>
 </body>
 </html>
