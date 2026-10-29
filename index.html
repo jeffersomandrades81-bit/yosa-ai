@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yosa AI Completa</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#0a0a0d;color:#fff;height:100dvh;display:flex;flex-direction:column}
+.top{height:56px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.top b{display:flex;align-items:center;gap:8px}
+.top button{background:#212126;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:10px;font-size:12px}
+.chat{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.bubble{max-width:88%;padding:14px 18px;border-radius:18px;white-space:pre-wrap;line-height:1.5;font-size:15px}
+.bot{background:#1e1e24;border:1px solid #2a2a32;border-bottom-left-radius:6px}
+.user{background:#2f89ff;align-self:flex-end;border-bottom-right-radius:6px}
+.bar{padding:12px;border-top:1px solid #222;background:#121214;display:flex;gap:8px}
+.bar input{flex:1;background:#1e1e24;border:1px solid #333;border-radius:24px;padding:13px 16px;color:#fff;outline:none}
+.bar button{width:44px;height:44px;border-radius:50%;border:none;background:#fff;color:#000;font-weight:900;font-size:18px}
+.config{position:fixed;inset:0;background:#000000cc;backdrop-filter:blur(10px);display:none;place-items:center;z-index:20;padding:20px}
+.config.show{display:grid}
+.card{background:#18181c;border:1px solid #2a2a32;border-radius:16px;padding:20px;width:100%;max-width:380px}
+.card h2{font-size:18px;margin-bottom:8px}
+.card p{font-size:13px;color:#9aa0a6;margin-bottom:14px;line-height:1.4}
+.card input{width:100%;background:#0f0f12;border:1px solid #333;border-radius:12px;padding:13px;color:#fff;margin-bottom:12px}
+.card button{width:100%;background:#2f89ff;border:none;padding:13px;border-radius:12px;color:#fff;font-weight:700}
+.link{color:#4ea1ff;font-size:12px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="top"><b>⬡ Yosa AI</b><button onclick="openCfg()">⚙️ API</button></div>
+<div class="chat" id="chat"></div>
+<div class="bar"><input id="input" placeholder="Pergunte para a Yosa..."><button onclick="send()">↑</button></div>
+
+<div class="config" id="config">
+<div class="card">
+<h2>Configurar Yosa AI</h2>
+<p>Cole sua API Key do projeto 958571561835. Ela fica salva só no seu celular/navegador.</p>
+<a class="link" href="https://aistudio.google.com/api-keys" target="_blank">→ Gerar key em aistudio.google.com/api-keys</a><br><br>
+<input id="keyInput" placeholder="Cole sua API Key aqui (AIza...)">
+<button onclick="saveKey()">Salvar e Começar</button>
+<p style="margin-top:12px;font-size:11px;color:#666">Dica: no GitHub Pages, deixe a key sem restrição ou restrinja para seu domínio.</p>
+</div>
+</div>
+
+<script>
+const chatEl = document.getElementById('chat');
+const inputEl = document.getElementById('input');
+const cfgEl = document.getElementById('config');
+const keyInput = document.getElementById('keyInput');
+
+let API_KEY = localStorage.getItem('YOSA_API_KEY') || '';
+
+function openCfg(){ cfgEl.classList.add('show'); keyInput.value = API_KEY; }
+function closeCfg(){ cfgEl.classList.remove('show'); }
+
+function saveKey(){
+  const k = keyInput.value.trim();
+  if(!k.startsWith('AIza')){ alert('Key inválida! Tem que começar com AIza'); return; }
+  localStorage.setItem('YOSA_API_KEY', k);
+  API_KEY = k;
+  closeCfg();
+  chatEl.innerHTML='';
+  addBot('Key salva com sucesso! ✅\n\nOlá! Eu sou a Yosa, sua IA completa. Como posso ajudar hoje?');
+}
+
+function addBot(t){
+  const d=document.createElement('div'); d.className='bubble bot'; d.textContent=t;
+  chatEl.appendChild(d); chatEl.scrollTop=chatEl.scrollHeight;
+}
+function addUser(t){
+  const d=document.createElement('div'); d.className='bubble user'; d.textContent=t;
+  chatEl.appendChild(d); chatEl.scrollTop=chatEl.scrollHeight;
+}
+
+window.onload=()=>{
+  if(!API_KEY){ openCfg(); }
+  else{ addBot('Olá! Eu sou a Yosa 👋\n\nJá estou conectada e pronta. (Projeto 958571561835)'); }
+};
+
+inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') send() });
+
+async function send(){
+  const text=inputEl.value.trim();
+  if(!text) return;
+  if(!API_KEY){ openCfg(); return; }
+  addUser(text);
+  inputEl.value='';
+
+  const load=document.createElement('div'); load.className='bubble bot'; load.textContent='Yosa digitando...';
+  chatEl.appendChild(load); chatEl.scrollTop=chatEl.scrollHeight;
+
+  try{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:text}]}]})
+    });
+    const data=await res.json();
+    load.remove();
+    if(data.error){ 
+      if(data.error.message.includes('API_KEY_INVALID')){ localStorage.removeItem('YOSA_API_KEY'); openCfg(); throw new Error('API Key inválida. Cole novamente.'); }
+      throw new Error(data.error.message); 
+    }
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta';
+    addBot(reply);
+  }catch(err){
+    load.remove();
+    addBot('Erro: '+err.message);
+  }
+}
+</script>
+</body>
+</html>
